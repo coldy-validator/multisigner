@@ -1,0 +1,22 @@
+###########################################################
+#                  SIGNER CONFIG                          #
+#                                                         #
+###########################################################
+[settings]
+
+# settings you might need to change:
+# your individual address
+KEY = "osmo1q5n04ugt8a5z30l273qmv4kzu77dypgsmn9jcz"
+# a good node
+RPC = "https://rpc.cosmos.directory:443/osmosis"
+
+#### less likely youll need to change these ####
+# multisig address
+MULTISIG = "osmo1q5n04ugt8a5z30l273qmv4kzu77dypgsmn9jcz"
+# where the txs are located
+REPO = "doggystylez/multisig-test"
+# should probably only change this if using ledger
+KEYRING = "os"
+# chain-id
+CHAIN = "osmosis-1"
+
