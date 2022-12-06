@@ -45,7 +45,7 @@ for tx in txs:
     with open(f"/tmp/{tx}.json") as f:
         print(bcolors.yellow + json.dumps(json.load(f)["body"]["messages"], indent=1) + f"\n{bcolors.nc}")
     subprocess.check_output(
-        [ "osmosisd", "tx", "sign", f"/tmp/{tx}.json", "--from", settings['KEY'], "--keyring-backend", settings['KEYRING'], "--account-number", acct,
+        [ "osmosisd", "tx", "sign", f"/tmp/{tx}.json", "--from", settings['KEY'], "--multisig", settings['MULTISIG'], "--keyring-backend", settings['KEYRING'], "--account-number", acct,
         "--sequence", tx, "--chain-id", settings['CHAIN'], "--offline", "--output-document", f"/tmp/{tx}{FILE}" ])
 
 signed = []

@@ -6,13 +6,13 @@
 
 # settings you might need to change:
 # your individual address
-KEY = "osmo1q5n04ugt8a5z30l273qmv4kzu77dypgsmn9jcz"
+KEY = "osmo15004ysvmqnqzkvt7x6s4cd53flmmvgfvqua8jr"
 # a good node
 RPC = "https://rpc.cosmos.directory:443/osmosis"
 
 #### less likely youll need to change these ####
 # multisig address
-MULTISIG = "osmo1q5n04ugt8a5z30l273qmv4kzu77dypgsmn9jcz"
+MULTISIG = "osmo1duj0ldp5p3qmksas35q7cq977f38a8e7chsxnw"
 # where the txs are located
 REPO = "doggystylez/multisig-test"
 # should probably only change this if using ledger
