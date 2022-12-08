@@ -9,6 +9,8 @@
 KEY = "osmo15004ysvmqnqzkvt7x6s4cd53flmmvgfvqua8jr"
 # a good node
 RPC = "https://rpc.cosmos.directory:443/osmosis"
+# account number, for offline siging. if empty a good rpc is required
+ACCOUNT = ""
 
 #### less likely youll need to change these ####
 # multisig address
