@@ -9,9 +9,9 @@ function install_osmosisd {
 
 
 # install brew (needs sudo)
-#/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-#brew install git gh python3 pip3
-#pip3 install requests toml.py
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+brew install git gh python3 pip3 jq
+pip3 install requests toml.py
 
 # build osmosisd binary if not present, check for update
 version=$(curl -s https://raw.githubusercontent.com/coldy-validator/chain-registry/master/osmosis/chain.json | jq -r '.codebase.recommended_version')

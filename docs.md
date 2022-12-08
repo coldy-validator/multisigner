@@ -21,7 +21,7 @@ install scripts:
 * [linux](scripts/linux-install.sh)
 
 ### transaction repo file structure
-
+<pre>
 └── transactions
     ├── unsigned
     │   ├── 0.json
@@ -34,3 +34,4 @@ install scripts:
     └── signed
         ├── 0-signed.json
         └── 1-signed.json
+</pre>
