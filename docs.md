@@ -1,5 +1,8 @@
 # multisigner
 
+to-do:
+* document online vs offline modes
+
 reqs:
 * osmosis daemon
 * python3, requests and [toml](https://pypi.org/project/toml/0.9.0) modules

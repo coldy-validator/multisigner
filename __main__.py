@@ -25,7 +25,6 @@ def main():
         print(
             f"{bcolors.red}error: no txs provided {bcolors.nc}(select transactions like 'python3 multisigner 0 1' for transactions 0 and 1)")
         exit()
-
     try:
         f = open(os.path.join(__location__, ".config.toml"))  # load user config
         config = toml.loads(f.read())
@@ -38,53 +37,75 @@ def main():
         exit()
 
     try:
-        NAME = (
-            subprocess.check_output(["git", "config", "user.name"])  # check user's git username
-            .decode("utf-8")
-            .strip()
-        )
-        if not os.path.exists(f"./{settings['REPO'].split('/')[1]}"):
-            subprocess.check_output(
+        NAME = (subprocess.check_output(["git", "config", "user.name"]).decode("utf-8").strip())  # check user's git username
+        if settings["REPO"]:
+            if not os.path.exists(f"./{settings['REPO'].split('/')[1]}"):  # if the repo exists in config, make sure we have it and pull changes
+                subprocess.check_output(
                     ["gh", "repo", "clone", "https://github.com/" + settings["REPO"], "--", "--quiet"])
-        subprocess.check_output(
+            subprocess.check_output(
                 ["git", "--git-dir", f"./{settings['REPO'].split('/')[1]}/.git",
                 "--work-tree", f"./{settings['REPO'].split('/')[1]}", "pull", "--quiet"])
-    except (subprocess.CalledProcessError, FileNotFoundError):  # if no username we will print the signatures later as they can't be pushed
-        NAME = ""
+        else:
+            REPO = "null"  # if no repo in config, we will print the signatures later as they can't be pushed
+    except (subprocess.CalledProcessError, FileNotFoundError):  # if no username we will print the signatures same as above
+        NAME = "null"
+    if not settings["RPC"]: RPC = "null"
+    else: RPC = settings["RPC"]
     if settings["ACCOUNT"]:
         acct = settings["ACCOUNT"]  # get the account number from config or rpc call
     else:
-        try:
-            acct = json.loads(
-                subprocess.check_output(
-                    ["osmosisd", "q", "account", settings["KEY"], "--node", settings["RPC"], "--output", "json"]).decode("utf-8")
-                )["account_number"]
-        except subprocess.CalledProcessError:
-            print(
-                f"{bcolors.red}rpc error. please check your connection, try a different node, or wait and try again")
+        if RPC == "null":
+            print("no rpc or account number in config. you need one or the other")
             exit()
-    if NAME:
-        FILE = f"-{NAME}-sig.json" 
-    else:
+        else:
+            try:
+                acct = json.loads(
+                    subprocess.check_output(["osmosisd", "q", "account", settings["KEY"], "--node", RPC, "--output", "json"]).decode("utf-8"))["account_number"]
+            except subprocess.CalledProcessError:
+                print(
+                    f"{bcolors.red}rpc error. please check your connection, try a different node, or wait and try again - or add your account number to config for offline mode")
+                exit()
+    if NAME == "null":
         print("\ngit/gh not installed/logged in. txs will be printed, not uploaded")
         FILE = "-sig.json"
+    else:
+        FILE = f"-{NAME}-sig.json"
 
     signed = []
-    for tx in txs:  # downloaded designated txs
-        r = requests.get(
-            f"https://raw.githubusercontent.com/{settings['REPO']}/main/transactions/unsigned/{tx}.json")
-        with open(f"/tmp/{tx}.json", "w") as f:
-            f.write(r.text)
+    for tx in txs:  # fetch designated txs
+        if tx.endswith(".json"):
+            try:
+                f = open(os.path.join(__location__, "transactions", "unsigned", tx))  # open from multisigner directory for local signing
+                with open(f"/tmp/{tx}", "w") as outfile:
+                    outfile.write(f.read())
+                tx = tx[:-5]
+            except FileNotFoundError:
+                print(f"error: {tx} - file not found")
+                exit()
+        else:
+            if REPO == "null":
+                print("error - no repo in config and online signing attempted.")
+                exit()
+            r = requests.get(
+                f"https://raw.githubusercontent.com/{settings['REPO']}/main/transactions/unsigned/{tx}.json")  # or download from tx repo
+            with open(f"/tmp/{tx}.json", "w") as f:
+                f.write(r.text)
         print(f"\nplease check tx {bcolors.blue}{tx}{bcolors.nc} before signing:\n")  # print the "messages" to console for review
         with open(f"/tmp/{tx}.json") as f:
             print(
                 bcolors.yellow
                 + json.dumps(json.load(f)["body"]["messages"], indent=1)
                 + f"\n{bcolors.nc}")
+        if tx.isnumeric():  # if the tx name is numeric, we assume its the sequence number, if not we ask for one
+            seq = tx
+        else:
+            seq = input("error - sequence number not provided. input sequence number if known: ")
+            while not seq.isnumeric():
+                seq = input("error - sequence number invalid. input sequence number if known: ")
         try:
             subprocess.check_output(  #  sign the txs
                     ["osmosisd", "tx", "sign", f"/tmp/{tx}.json", "--from", settings["KEY"],
-                    "--multisig", settings["MULTISIG"], "--keyring-backend", settings["KEYRING"], "--account-number", acct, "--sequence", tx,
+                    "--multisig", settings["MULTISIG"], "--keyring-backend", settings["KEYRING"], "--account-number", acct, "--sequence", seq,
                     "--chain-id", settings["CHAIN"], "--offline", "--output-document", f"/tmp/{tx}{FILE}"])
             if os.path.isfile(f"/tmp/{tx}{FILE}"):
                 signed.append(tx)
@@ -93,15 +114,15 @@ def main():
                 f"sig {tx} {bcolors.red}failed{bcolors.nc}. please check the tx or your config")
 
     if signed != []:  # choose to print or upload, or skip if not logged in
-        if NAME:
+        if NAME == "null" or REPO == "null":
+            choice = "2"
+        else:
             choice = input(
                 "signatures completed\n\n   1) upload signatures to repo\n   2) print signatures to console\n\nyour choice: ")
             while choice != "1" and choice != "2":
                 time.sleep(0.1)
                 choice = input(
                     "invalid input. please enter 1 to upload or 2 to print signatures: ")
-        else:
-            choice = "2"
     else:
         print(f"{bcolors.red}error{bcolors.nc}: no signatures found")
         exit()

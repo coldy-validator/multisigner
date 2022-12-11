@@ -6,17 +6,17 @@
 
 # settings you might need to change:
 # your individual address
-KEY = "osmo15004ysvmqnqzkvt7x6s4cd53flmmvgfvqua8jr"
-# a good node
-RPC = "https://rpc.cosmos.directory:443/osmosis"
+KEY = "osmo1cs4jxnxjl54y3xnk4aud5g4n334nxsnnxaqegn"
+# a good node. if empty, forces offline mode
+RPC = ""
 # account number, for offline siging. if empty a good rpc is required
-ACCOUNT = ""
+ACCOUNT = "177061"
 
 #### less likely youll need to change these ####
 # multisig address
-MULTISIG = "osmo1duj0ldp5p3qmksas35q7cq977f38a8e7chsxnw"
-# where the txs are located
-REPO = "doggystylez/multisig-test"
+MULTISIG = "osmo1apm6afyajnplmj5pn0x5us7wrxhfhge4590fdv"
+# where the txs are located. if empty, forces offline mode
+REPO = ""
 # should probably only change this if using ledger
 KEYRING = "os"
 # chain-id
