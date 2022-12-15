@@ -39,6 +39,7 @@ def main():
     try:
         NAME = (subprocess.check_output(["git", "config", "user.name"]).decode("utf-8").strip())  # check user's git username
         if settings["REPO"]:
+            REPO = settings["REPO"]
             if not os.path.exists(f"./{settings['REPO'].split('/')[1]}"):  # if the repo exists in config, make sure we have it and pull changes
                 subprocess.check_output(
                     ["gh", "repo", "clone", "https://github.com/" + settings["REPO"], "--", "--quiet"])

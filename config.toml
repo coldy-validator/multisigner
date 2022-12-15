@@ -9,12 +9,12 @@
 KEY = "osmo1cs4jxnxjl54y3xnk4aud5g4n334nxsnnxaqegn"
 # a good node. if empty, forces offline mode
 RPC = ""
-# account number, for offline siging. if empty a good rpc is required
-ACCOUNT = "177061"
 
 #### less likely youll need to change these ####
 # multisig address
 MULTISIG = "osmo1apm6afyajnplmj5pn0x5us7wrxhfhge4590fdv"
+# account number of the multisig for offline signing. if empty a good rpc is required
+ACCOUNT = "606508"
 # where the txs are located. if empty, forces offline mode
 REPO = ""
 # should probably only change this if using ledger
