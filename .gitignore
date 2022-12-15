@@ -1,1 +1,3 @@
 multisig-test/
+__pycache__/
+config.toml

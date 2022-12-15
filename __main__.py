@@ -26,14 +26,19 @@ def main():
         print(f"{bcolors.red}error: no txs provided {bcolors.nc}(select transactions like 'python3 multisigner 0 1' for transactions 0 and 1)")
         exit()
     try:
-        f = open(os.path.join(__location__, ".config.toml"))  # load user config
+        f = open(os.path.join(__location__, "config.toml"))  # load user config
         config = toml.loads(f.read())
         settings = config["settings"]
+        if not settings["BINARY"]:
+            print(f"{bcolors.red}error: no binary name in config{bcolors.nc}")
+            exit()
+        else:
+            binary = settings["BINARY"]
     except FileNotFoundError:
         print(
             f"{bcolors.red}error{bcolors.nc}: config file not found.\n\n"
-            f"quick setup:\n\n  1. {bcolors.blue}cp ./multisigner/config.toml ./multisigner/.config.toml{bcolors.nc}\n"
-            f"  2. {bcolors.blue}nano multisigner/.config.toml{bcolors.nc} and fill in your info\n  3. run this program again\n")
+            f"quick setup:\n\n  1. {bcolors.blue}cp ./multisigner/config.toml.sample ./multisigner/config.toml{bcolors.nc}\n"
+            f"  2. {bcolors.blue}nano multisigner/config.toml{bcolors.nc} and fill in your info\n  3. run this program again\n")
         exit()
 
     try:
@@ -64,7 +69,7 @@ def main():
         else:
             try:
                 acct = json.loads(
-                    subprocess.check_output(["osmosisd", "q", "account", settings["KEY"], "--node", RPC, "--output", "json"]).decode("utf-8"))["account_number"]
+                    subprocess.check_output([binary, "q", "account", settings["MULTISIG"], "--node", RPC, "--output", "json"]).decode("utf-8"))["account_number"]
             except subprocess.CalledProcessError:
                 print(f"{bcolors.red}rpc error. please check your connection, try a different node, or wait and try again - or add your account number to config for offline mode")
                 exit()
@@ -100,14 +105,14 @@ def main():
                     print("error - no rpc in config")
                 else:
                     try:
-                        seq = json.loads(subprocess.check_output(["osmosisd", "q", "account", settings["KEY"], "--node", RPC, "--output", "json"]).decode("utf-8"))["sequence"]
+                        seq = json.loads(subprocess.check_output([binary, "q", "account", settings["KEY"], "--node", RPC, "--output", "json"]).decode("utf-8"))["sequence"]
                     except subprocess.CalledProcessError:
                         print(f"{bcolors.red}rpc error. please check your connection, try a different node, or wait and try again - or enter sequence number")
             while not seq.isnumeric():
                 seq = input("error - sequence number invalid. input sequence number if known: ")
         try:
             subprocess.check_output(  #  sign the txs
-                    ["osmosisd", "tx", "sign", tx_file, "--from", settings["KEY"],
+                    [binary, "tx", "sign", tx_file, "--from", settings["KEY"],
                     "--multisig", settings["MULTISIG"], "--keyring-backend", settings["KEYRING"], "--account-number", acct, "--sequence", seq,
                     "--chain-id", settings["CHAIN"], "--offline", "--output-document", sig_file])
             if os.path.isfile(sig_file):

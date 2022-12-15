@@ -1,0 +1,27 @@
+###########################################################
+#                  SIGNER CONFIG                          #
+#                                                         #
+###########################################################
+[settings]
+
+# multisig settings
+# your individual address
+KEY = ""
+# multisig address
+MULTISIG = ""
+# where the txs are located. not required, if empty forces local mode
+REPO = ""
+# account number of the multisig. not required, if empty a good rpc is required
+ACCOUNT = ""
+
+# network settings
+# a good node. if empty, forces offline mode
+RPC = "https://rpc.cosmos.directory:443/osmosis"
+# chain-id
+CHAIN = "osmosis-1"
+# binary name
+BINARY="osmosisd"
+
+# etc
+# keyring backend
+KEYRING = "os"

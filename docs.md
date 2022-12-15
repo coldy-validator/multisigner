@@ -2,16 +2,18 @@
 
 ### basic operation
 
-`config.toml` contains the user configuration, including the user's address, and multisig address which are required. If no rpc is provided or the rpc is unavailable when signing, the account number should be supplied. This can be found using `osmosisd q account <address>` or `https://api.osmosis.interbloc.org/cosmos/auth/v1beta1/account/<address>`
+`config.toml` contains the user configuration. The config is preset for [Osmosis](https://github.com/osmosis-labs/osmosis). To sign transactions on Osmosis, only the user's individual address and the multisig address need to be supplied.
+
+If no rpc is provided or the rpc is unavailable when signing, the account number should be supplied. This can be found using `osmosisd q account <address>` or `https://api.osmosis.interbloc.org/cosmos/auth/v1beta1/account/<address>`.
 
 Transactions will be (ideally) named after the sequence number (ex. 0.json, 1.json), but if the name is not numeric, signer will be asked for a sequence number. The proper [file structure](https://github.com/coldy-validator/multisigner/blob/master/docs.md#transaction-repo-file-structure) can be found below. This can be a separate repo for "remote" mode, or under the `local` dir of this repo for "local" mode.
 
 ### setup
-* copy config file: `cp ./multisigner/config.toml ./multisigner/.config.toml`
-* edit config: `nano multisigner/.config.toml`
+* copy config file: `cp ./multisigner/config.toml.sample ./multisigner/config.toml`
+* edit config: `nano multisigner/config.toml`
 
 ### remote mode
-* requires gh installed and logged in, transaction repo added to config
+* requires gh installed and logged in, transaction repo set in config
 * signatures will be uploaded to repo
 * to-do - auto-broadcast, scheduled txs
 
