@@ -11,8 +11,9 @@ Transactions will be (ideally) named after the sequence number (ex. 0.json, 1.js
 ### setup
 * copy config file: `cp ./multisigner/config.toml.sample ./multisigner/config.toml`
 * edit config: `nano multisigner/config.toml`
-* add command: `echo '#!/bin/bash
-alias multisign="python3 multisigner"' >> $HOME/.bash_aliases`
+* add command: `cat << EOF >> $HOME/.bashrc
+alias multisign="python3 multisigner"
+EOF`
 
 
 ### remote mode
@@ -31,7 +32,7 @@ Anyone with write access to the transaction repo can add and push an unsigned tx
 The signer will add the unsigned tx to the `local/transactions/unsigned` dir, which can be signed and printed using `python3 multisigner 0-local` for a single tx or `python3 multisigner 0-local 1-local 2-local` for multiple txs.
 
 ### reqs:
-* [osmosis daemon](https://get.osmosis.zone/)
+* osmosis daemon
 * python3, requests and [toml](https://pypi.org/project/toml/0.9.0) modules
 
 ### install scripts (WIP):
