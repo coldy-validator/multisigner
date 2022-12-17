@@ -11,9 +11,7 @@ Transactions will be (ideally) named after the sequence number (ex. 0.json, 1.js
 ### setup
 * copy config file: `cp ./multisigner/config.toml.sample ./multisigner/config.toml`
 * edit config: `nano multisigner/config.toml`
-* add command: `cat << EOF >> $HOME/.bashrc
-alias multisign="python3 multisigner"
-EOF`
+* add command: `echo '"alias multisign="python3 multisigner' >> $HOME/.bashrc"'
 
 
 ### remote mode
