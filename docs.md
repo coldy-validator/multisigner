@@ -11,7 +11,7 @@ Transactions will be (ideally) named after the sequence number (ex. 0.json, 1.js
 ### setup
 * copy config file: `cp ./multisigner/config.toml.sample ./multisigner/config.toml`
 * edit config: `nano multisigner/config.toml`
-* add command: `echo 'alias="python3 multisigner"' >> $HOME/.bash_aliases'
+* add command: `echo 'alias="python3 multisigner"' >> $HOME/.bash_aliases`
 
 ### remote mode
 * requires gh installed and logged in, transaction repo set in config
