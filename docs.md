@@ -18,7 +18,7 @@ Transactions will be (ideally) named after the sequence number (ex. 0.json, 1.js
 * signatures will be uploaded to repo
 * to-do - auto-broadcast, scheduled txs
 
-Anyone with write access to the transaction repo can add and push an unsigned tx to the `transactions/unsigned` dir, which the signers can sign and upload using `multisign 0` for a single tx or `multisign 0 1 2` for multiple txs.
+Anyone with write access to the transaction repo can add and push an unsigned tx to the `transactions/unsigned` dir, which the signers can sign and upload using `multisign 0` for a single tx or `multisign 0 1 2` for multiple txs. Move to home dir (`cd ~/`) before running multisign command to avoid errors.
 
 
 
