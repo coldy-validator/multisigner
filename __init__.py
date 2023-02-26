@@ -1,4 +1,4 @@
-import os
+from os import path,getcwd
 
 # text colors
 class bcolors:
@@ -10,5 +10,5 @@ class bcolors:
     red = '\033[91m'
     nc = '\033[0m'
 
-__location__ = os.path.realpath(
-    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+__location__ = path.realpath(
+    path.join(getcwd(), path.dirname(__file__)))

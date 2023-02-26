@@ -1,0 +1,25 @@
+multisig = {
+
+# your name, requred for remote mode
+"signer_name": "",
+# your individual address, required
+"signer_address": "",
+# multisig address, required
+"multisig_address": "",
+# account number of the multisig. not required, if empty a good rpc is required
+"account_number": "",
+# where the txs are located. not required, if empty forces local mode
+"repo": ""
+}
+
+client = {
+
+# a good node. if empty, forces offline mode
+"rpc": "https://rpc.cosmos.directory:443/osmosis",
+# chain-id
+"chain_id": "osmosis-1",
+# binary name
+"binary": "osmosisd",
+# keyring backend
+"keyring": "os"
+}

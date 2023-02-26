@@ -1,5 +1,8 @@
 #!/bin/bash
 
+[ -z "$(which osmosisd)"] && { printf "osmosisd not found int \$PATH" ; exit 1 }
+[ -z "$(which jq)"] && { printf "please install jq\n\n`sudo apt update \&\& sudo apt install jq`" ; exit 1 }
+
 printf "enter "from" address: "
 read -r key
 
