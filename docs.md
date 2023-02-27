@@ -1,12 +1,12 @@
 # multisigner
 
+🚧 may not be up-to-date, stay tuned 🚧
+
 ### basic operation
 
-`config.py` contains the user configuration. The config is preset for [Osmosis](https://github.com/osmosis-labs/osmosis). To sign transactions on Osmosis, only the user's individual address and the multisig address need to be supplied.
-
-If no rpc is provided or the rpc is unavailable when signing, the account number should be supplied. This can be found using `osmosisd q account <address>` or `https://api.osl.zone/cosmos/auth/v1beta1/account/<address>`.
-
-~~Transactions will be (ideally) named after the sequence number (ex. 0.json, 1.json), but if the name is not numeric, signer will be asked for a sequence number. The proper [file structure](https://github.com/coldy-validator/multisigner/blob/master/docs.md#transaction-repo-file-structure) can be found below. This can be a separate repo for "remote" mode, or under the `local` dir of this repo for "local" mode.~~
+* `config.py` is the default user configuration file. The config is preset for [Osmosis](https://github.com/osmosis-labs/osmosis). To sign transactions on Osmosis, only the user's name, individual address and the multisig address need to be supplied.
+* Other config files located in the `multisigner/` dir can be used with the `-c` flag (ex. `python3 multisigner -c config_test.py`)
+* If no rpc is provided or the rpc is unavailable when signing, the account number should be supplied. This can be found using `osmosisd q account <address>` or `https://api.osl.zone/cosmos/auth/v1beta1/account/<address>`.
 
 ### setup
 * install dependencies (git, osmosisd, python3)
