@@ -94,7 +94,7 @@ def main():
                 print("error - no repo in config and git signing attempted.")
                 exit()
             tx_file = path.join(repo_dir, "transactions", "unsigned", tx)
-            sig_file = path.join(repo_dir, "transactions", "signatures", tx)
+            sig_file = path.join(repo_dir, "transactions", "signatures", f"{name}-{tx}")
         if not path.exists(tx_file):
             print(f"error: {tx} - file not found")
             exit()
