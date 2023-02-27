@@ -1,21 +1,19 @@
 multisig = {
-
-# your name, requred for remote mode
+# your name
 "signer_name": "",
-# your individual address, required
+# your individual address
 "signer_address": "",
-# multisig address, required
-"multisig_address": "",
-# account number of the multisig. not required, if empty a good rpc is required
-"account_number": "",
+# multisig address
+"multisig_address": "osmo12cpjaaqadqqx9c9aql864cz87dvgh9k25r2ydz",
 # where the txs are located. not required, if empty forces local mode
-"repo": ""
+"repo": "doggystylez/multisig-test",
+# account number of the multisig. not required, if empty a good rpc is required
+"account_number": ""
 }
 
 client = {
-
 # a good node. if empty, forces offline mode
-"rpc": "https://rpc.cosmos.directory:443/osmosis",
+"rpc": "https://rpc.osl.zone:443",
 # chain-id
 "chain_id": "osmosis-1",
 # binary name

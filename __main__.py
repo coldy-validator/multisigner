@@ -44,13 +44,13 @@ def main():
             f"  2. {bcolors.blue}nano multisigner/config.py{bcolors.nc} and fill in your info\n  3. run this program again\n")
         exit()
     try:
-        name = (check_output(["git", "config", "user.name"]).decode("utf-8").strip())  # check user's git username
+        check_output(["git", "config", "user.email"])  # check if git email configured
         if multisig["repo"]:
             repo = multisig["repo"]
             repo_dir = path.join(__location__, repo.split('/')[1])
             if not path.exists(repo_dir):  # if the repo exists in config, make sure we have it and pull changes
                 check_output(
-                    ["git", "clone", "git@github.com:" + repo, repo_dir, "--", "--quiet"])
+                    ["git", "clone", "git@github.com:" + repo, repo_dir, "--quiet"])
             check_output(
                 ["git", "--git-dir", f"{repo_dir}/.git",
                 "--work-tree", repo_dir, "pull", "--quiet"])
@@ -58,6 +58,7 @@ def main():
             repo = "null"  # if no repo in config, we will print the signatures later as they can't be pushed
     except (CalledProcessError,FileNotFoundError):
         print(f"{bcolors.yellow}warn: git not configured{bcolors.nc}")
+        repo = "null"
     if multisig["signer_name"]:
         name = multisig["signer_name"]
     else:
@@ -86,22 +87,22 @@ def main():
         if tx.endswith("-local"):
             name = "null"  # if we get a local tx force print
             tx = tx.split("-")[0]
-            tx_file = path.join(__location__, "local", "transactions", "unsigned", f"{tx}.json")
-            sig_file = path.join(__location__, "local", "transactions", "signatures", f"{tx}-sig.json")
+            tx_file = path.join(__location__, "local", "transactions", "unsigned", tx)
+            sig_file = path.join(__location__, "local", "transactions", "signatures", tx)
         else:
             if repo == "null":
                 print("error - no repo in config and git signing attempted.")
                 exit()
-            tx_file = path.join(repo_dir, "transactions", "unsigned", f"{tx}.json")
-            sig_file = path.join(repo_dir, "transactions", "signatures", f"{tx}-{name}-sig.json")
+            tx_file = path.join(repo_dir, "transactions", "unsigned", tx)
+            sig_file = path.join(repo_dir, "transactions", "signatures", tx)
         if not path.exists(tx_file):
             print(f"error: {tx} - file not found")
             exit()
         print(f"\nplease check tx {bcolors.blue}{tx}{bcolors.nc} before signing:\n")  # print the "messages" to console for review
         with open(tx_file) as f:
             print(f"{bcolors.yellow}{dumps(load(f)['body']['messages'], indent=1)}\n{bcolors.nc}")
-        if tx.isnumeric():  # if the tx name is numeric, we assume its the sequence number, if not we ask for one
-            seq = tx
+        if tx.split('-')[0].isnumeric():  # if the tx begins with a number and a dash, we assume its the sequence number, if not we ask for one
+            seq = tx.split('-')[0]
         else:
             seq = input("error - sequence number not provided. input sequence number if known, or 'n' to check rpc for next seq number: ")
             if seq == "n":
