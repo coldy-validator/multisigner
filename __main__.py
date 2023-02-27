@@ -119,7 +119,8 @@ def main():
         print(f"\nplease check tx {bcolors.blue}{tx}{bcolors.nc} before signing:\n")  # print the "messages" to console for review
         with open(tx_file) as f:
             body = load(f)['body']
-        print(f"{bcolors.yellow}{dumps(body['messages'], indent=1)}{bcolors.nc}\n")
+        print(f"{bcolors.yellow}{dumps(body['messages'], indent=1)}{bcolors.nc}")
+        print(f"{bcolors.magenta}memo: {dumps(body['memo'], indent=1)}\n{bcolors.nc}")
         if tx.split('-')[0].isnumeric():  # if the tx begins with a number and a dash, we assume its the sequence number, if not we ask for one
             seq = tx.split('-')[0]
         else:
