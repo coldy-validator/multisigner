@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from os import path
 from sys import argv
+from glob import glob
 from time import sleep
 from json import dumps,load,loads
 from importlib import import_module
@@ -16,24 +17,39 @@ def print_sig(signed):  # print signatures to console
             print(
                 f"{bcolors.magenta}\n----------------------sig {bcolors.blue}{sig['tx']}{bcolors.magenta} begins----------------------\n{bcolors.grey}"
                 + dumps(load(f), indent=1)
-                + f"{bcolors.magenta}\n----------------------sig {bcolors.blue}{sig['tx']}{bcolors.magenta} ends----------------------{bcolors.nc}")
+                + f"{bcolors.magenta}\n----------------------sig {bcolors.blue}{sig['tx']}{bcolors.magenta} ends------------------------{bcolors.nc}")
 
 def main():
     config_file = "config"  # default config file
     arg_list = argv[1:]  # check command line args
     try:
-        args,txs = getopt(arg_list, "hac:")
-        for arg,val in args:
+        args,values = getopt(arg_list, "hac:s:")
+        for arg,value in args:
             if arg in "-h":
                 print("help menu")  # to do
                 exit()
-            if arg in "-c":  # custom config
-                if val.endswith(".py"):
-                    config_file = val[:-3]
+            elif arg in "-c":  # custom config
+                if value.endswith(".py"):
+                    config_file = value[:-3]
                 else:
-                    config_file = val
-#            if arg in "-a":
-#                txs = "all"
+                    config_file = value
+            elif arg in "-s":
+                tx_list = value.split(" ")
+                if len(tx_list) != 2:
+                    print(f"{bcolors.red}error{bcolors.nc}: must provide exactly two transactions (first and last) to sign in sequence")
+                    exit()
+                else:
+                    txs = {"mode":"seq", "txs": [ tx_list[0], tx_list[1] ]}
+#            elif arg in "-a":  # to do: must be mutually exclusive with -s
+#                txs = {"mode":"all"}
+        try:
+            if txs["mode"] == "seq" or txs["mode"] == "all": pass
+        except UnboundLocalError:
+            if values == []:
+                print(f"{bcolors.red}error: no txs provided {bcolors.nc}")
+                exit()
+            else:
+                txs = {"mode":"std", "txs": values}
     except GetoptError as err:
         print(f"{bcolors.yellow}error - {str(err)}{bcolors.nc}")
         exit()
@@ -57,9 +73,6 @@ def main():
         exit()
     if not config.multisig["signer_address"] or not config.multisig["multisig_address"]:
         print(f"{bcolors.red}error: signer and/or multisig address not configured{bcolors.nc}")
-        exit()
-    if txs == []:
-        print(f"{bcolors.red}error: no txs provided {bcolors.nc}(select transactions like 'python3 multisigner 0 1' for transactions 0 and 1)")
         exit()
     try:
         check_output(["git", "config", "user.email"])  # check if git email configured
@@ -101,7 +114,18 @@ def main():
     if name == "null":
         print("\ngit not installed/configured. txs will be printed, not uploaded")
     signed = []
-    for tx in txs:  # fetch designated txs
+    if txs["mode"] == "seq":
+        for file in txs["txs"]:
+            if not path.exists(path.join(repo_dir, "transactions", "unsigned", file)):
+                print(f"{bcolors.red}error{bcolors.nc}: {file} - file not found")
+                exit()
+        tx_list = []
+        sequence = range(int(txs["txs"][0].split("-")[0]),int(txs["txs"][1].split("-")[0]) + 1)
+        for tx in sequence:
+            tx_list = tx_list + (glob(f"{tx}-*",root_dir= path.join(repo_dir, "transactions", "unsigned")))
+    elif txs["mode"] == "std":
+        tx_list = txs["txs"]
+    for tx in tx_list:  # fetch designated txs
         if tx.endswith("-local"):
             name = "null"  # if we get a local tx force print
             tx = tx.split("-")[0]
@@ -112,11 +136,11 @@ def main():
                 print("error - no repo in config and git signing attempted.")
                 exit()
             tx_file = path.join(repo_dir, "transactions", "unsigned", tx)
-            sig_file = path.join(repo_dir, "transactions", "signatures", f"{name}-{tx}")
+            sig_file = path.join(repo_dir, "transactions", "signatures", f"{tx[:-5]}-{name}.json")
         if not path.exists(tx_file):
-            print(f"error: {tx} - file not found")
+            print(f"{bcolors.red}error{bcolors.nc}: {tx} - file not found")
             exit()
-        print(f"\nplease check tx {bcolors.blue}{tx}{bcolors.nc} before signing:\n")  # print the "messages" to console for review
+        print(f"\n{bcolors.blue}{tx}{bcolors.nc}:")  # print the "messages" to console for review
         with open(tx_file) as f:
             body = load(f)['body']
         print(f"{bcolors.yellow}{dumps(body['messages'], indent=1)}{bcolors.nc}")
@@ -157,21 +181,13 @@ def main():
         exit()
     if choice == "1":  # add signatures to repo and push to remote
         try:
-            check_output(
-                    ["git", "--git-dir", f"{repo_dir}/.git",
-                    "--work-tree", repo_dir, "pull", "--quiet"])
-            check_output(
-                    ["git", "--git-dir", f"{repo_dir}/.git",
-                    "--work-tree", repo_dir, "add", "./transactions/signatures/*"])
-            check_output(
-                    [ "git", "--git-dir", f"{repo_dir}/.git", "--work-tree",
-                    repo_dir, "commit", "-m" f"{name} signed {' '.join([x['tx'] for x in signed])}"])
-            check_output(
-                    ["git", "--git-dir", f"{repo_dir}/.git",
-                    "--work-tree", repo_dir, "push", "--quiet"])
+            check_output(["git", "--git-dir", f"{repo_dir}/.git", "--work-tree", repo_dir, "pull", "--quiet"])
+            check_output(["git", "--git-dir", f"{repo_dir}/.git", "--work-tree", repo_dir, "add", "./transactions/signatures/*"])
+            check_output([ "git", "--git-dir", f"{repo_dir}/.git", "--work-tree", repo_dir, "commit", "-m" f"{name} signed {' '.join([x['tx'] for x in signed])}"])
+            check_output(["git", "--git-dir", f"{repo_dir}/.git", "--work-tree", repo_dir, "push", "--quiet"])
             print(f"\n{bcolors.green}signatures uploaded to repo{bcolors.nc}")
         except CalledProcessError:
-            print(f"{bcolors.red}error uploading signatures to repo{bcolors.nc}\n\nprinting now...")
+            print(f"\n{bcolors.red}error uploading signatures to repo{bcolors.nc}")
             print_sig(signed)
     elif choice == "2":
         print_sig(signed)
